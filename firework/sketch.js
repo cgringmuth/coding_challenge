@@ -1,15 +1,24 @@
 
 var fireworks = [];
 var ground = 10;
-
+var gp;
+var gp_width;
+var gp_height;
+var showSmallWin = false;
 
 function setup() {
-  var can = createCanvas(800,600);
+  var can = createCanvas(1000,800);
+  gp_width = 800;
+  gp_height = 600;
+  gp = createGraphics(gp_width, gp_height);
   can.parent('sketch-holder');
 }
 
 function draw() {
-  background(51,100);
+  gp.background(51,100);
+  // gp.stroke(0,0,255);
+  // gp.noFill();
+  // gp.rect(5,5,width-10, height-10);
   if (random(1) < 0.1) {
     fireworks.push(new Firework());
   }
@@ -26,8 +35,32 @@ function draw() {
       obj.splice(i,1);
     }
   });
+  background(255);
+  drawFrame();
+  image(gp, 100, 100);
+  if (showSmallWin) {
+    image(gp, mouseX, mouseY, width/6, height/6);
+
+  }
 }
 
+
+function drawFrame() {
+  var margin = 10;
+  noFill();
+  for (var i = 0; i < 10; i++) {
+    var alpha = map(i,0,9,255,20);
+    stroke(0,0,255, alpha);
+    ++margin;
+    rect(100-margin, 100-margin, gp_width+2*margin, gp_height+2*margin);
+  }
+}
+
+function keyPressed() {
+  if (keyCode === 'S'.charCodeAt(0)) {
+    showSmallWin = !showSmallWin;
+  }
+}
 
 
 function Firework() {
@@ -91,7 +124,7 @@ function Particle(c, pos, vel, exploded, lifespan) {
   if (pos) {
     this.pos = pos.copy();
   } else {
-    this.pos = createVector(random(0,width),height-ground-1);
+    this.pos = createVector(random(0,gp_width),gp_height-ground-1);
   }
   if (vel) {
     this.vel = vel.copy();
@@ -115,7 +148,7 @@ function Particle(c, pos, vel, exploded, lifespan) {
     if (this.exploded) {
       this.lifespan--;
     }
-    if (this.pos.y < height-ground) {
+    if (this.pos.y < gp_height-ground) {
       this.vel.add(this.acc);
       this.pos.add(this.vel);
       this.acc.mult(0);
@@ -123,8 +156,8 @@ function Particle(c, pos, vel, exploded, lifespan) {
   }
 
   this.draw = function () {
-    fill(this.color, lifespan);
-    noStroke();
-    ellipse(this.pos.x, this.pos.y, 5);
+    gp.fill(this.color, lifespan);
+    gp.noStroke();
+    gp.ellipse(this.pos.x, this.pos.y, 5);
   }
 }
