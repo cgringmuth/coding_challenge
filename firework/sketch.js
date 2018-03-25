@@ -4,7 +4,8 @@ var ground = 10;
 
 
 function setup() {
-  createCanvas(800,600);
+  var can = createCanvas(800,600);
+  can.parent('sketch-holder');
 }
 
 function draw() {
